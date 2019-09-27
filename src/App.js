@@ -3,27 +3,33 @@ import {
   BrowserRouter as Router,
   Route, Link, Redirect, withRouter
 } from 'react-router-dom'
+import { Table, Form, Button, Alert, Navbar} from 'react-bootstrap'
+import { Container } from 'semantic-ui-react'
 
 const Menu = () => {
   const padding = {
     paddingRight: 5
   }
   return (
-    <div>
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Link to="/" style={padding}>anecdotes</Link>
       <Link to="/create"  style={padding}>create new</Link>
       <Link to="/about"  style={padding}>about</Link>
-    </div>
+    </Navbar>
   )
 }
 
 const AnecdoteList = ({ anecdotes, notification }) => (
   <div>
     <Notification notification={notification}/>
-    <h2>Anecdotes</h2>
-    <ul>
-      {anecdotes.map(anecdote => <li><Link to={"/anecdotes/"+anecdote.id} key={anecdote.id} >{anecdote.content}</Link></li>)}
-    </ul>
+    <thead>
+    <h4>Anecdotes</h4>
+    </thead>
+    <Table stripped>
+    <tbody>
+    {anecdotes.map(anecdote => <tr><th><Link to={"/anecdotes/"+anecdote.id} key={anecdote.id} >{anecdote.content}</Link></th><th>{anecdote.author}</th></tr>)}
+    </tbody>
+    </Table>
   </div>
 )
 
@@ -84,7 +90,7 @@ let CreateNew = (props) => {
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <div>
           content
           <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
@@ -97,8 +103,8 @@ let CreateNew = (props) => {
           url for more info
           <input name='info' value={info} onChange={(e) => setInfo(e.target.value)} />
         </div>
-        <button>create</button>
-      </form>
+        <Button onClick={handleSubmit}>create</Button>
+      </Form>
     </div>
   )
 
@@ -107,21 +113,19 @@ let CreateNew = (props) => {
 CreateNew = withRouter(CreateNew)
 
 const Notification = (props) => {
-
-  const style = { padding: 5, border: "1px solid grey"}
-
   if (props.notification === "") {
     return (
       null
     )
   } else {
     return (
-      <div style={style}> 
+      <Alert variant="success"> 
         a new anecdote: {props.notification} created!
-      </div>
+      </Alert>
     )
   }
 }
+
 
 const App = () => {
   const [anecdotes, setAnecdotes] = useState([
@@ -167,19 +171,19 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Container>
     <Router>
       <h1>Software anecdotes</h1>
-      <Menu />
-      <Route exact path="/" render={() => <AnecdoteList anecdotes={anecdotes} notification={notification} />} />
+      <Menu className="container"/>
+      <Route exact path="/" render={() => <AnecdoteList anecdotes={anecdotes} notification={notification} />} className="container"/>
       <Route exact path="/anecdotes/:id" render={({ match }) =>
           <Anecdote anecdote={anecdoteById(match.params.id)}/>
         } />
-      <Route exact path="/about" render={() => <About />} />
+      <Route exact path="/about" render={() => <About />} className="container"/>
       <Route exact path="/create" render={() => <CreateNew addNew={addNew} createNotification={createNotification} />} />
     </Router>
     <Footer />
-    </div>
+    </Container>
   )
 }
 
